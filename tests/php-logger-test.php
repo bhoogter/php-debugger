@@ -2,24 +2,28 @@
 declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
-class pages_test extends TestCase
+class php_logger_test extends TestCase
 {
-	private const PAGES_XML = __DIR__ . "/resources/pages.xml";
+	private const TEST_MSG = "testing";
 
-	public function testCreatePagesClass(): void
+	public function testLog(): void
 	{
-		$obj = new xml_serve();
-		$this->assertNotNull($obj);
-	}
-	
-	public function testCreatePagesClassWithFile(): void {
-		$obj = new xml_serve(self::PAGES_XML);
-		$this->assertNotNull($obj);
+        php_logger::$defaultLevel = 'warning';
+        $this->assertTrue(php_logger::error(self::TEST_MSG));
+        $this->assertTrue(php_logger::warning(self::TEST_MSG));
+        $this->assertFalse(php_logger::info(self::TEST_MSG));
+        $this->assertFalse(php_logger::log(self::TEST_MSG));
+        $this->assertFalse(php_logger::debug(self::TEST_MSG));
+        $this->assertFalse(php_logger::trace(self::TEST_MSG));
 	}
 
-	public function testCreatePagesClassWithXmlFileObject(): void {
-		$xmlobj = new xml_file(self::PAGES_XML);
-		$obj = new xml_serve($xmlobj);
-		$this->assertNotNull($obj);
+    public function testLogSpecific(): void
+	{
+        php_logger::$defaultLevel = 'warning';
+        php_logger::set_log_level(get_class(), 'info');
+        $this->assertEquals('info', php_logger::get_log_level(get_class()));
+        $this->assertEquals('warning', php_logger::get_log_level('something else'));
+        $this->assertFalse(php_logger::log(self::TEST_MSG));
+        $this->assertTrue(php_logger::info(self::TEST_MSG));
 	}
 }
