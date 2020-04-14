@@ -15,8 +15,10 @@ before_deploy:
 - php box.phar build
 deploy:
   provider: releases
+  skip_cleanup: true
+  file: php-logger.phar
   api_key:
     secure: oP7so6WGsSlWFLsV2tiF8Y2fPGRwMQ1oJ5nV4RtlnjV7HLi7pRPg13kh+kPD/pdrtwXG0Lzj+JeykbGQ8doWidRpZtjzhPsUFDBu9cYEkAdZAiN6qGPp8g8kacczpjWgf5HMzZfdRU4MqFPvwjiRubDJsVpXbNXgmc1+avkVPhy7FKCmvuVlowz+KFyaeqGIvQQc/gkYMpksAyGXFXkps/e2Eqk1Tu0R68bgo3WfKwVPM2EwSlS1qLDVMMmsybJAk1jwjkDyH7Gr6bxMWv6uLNdhNOxXKxRAkatQUSfhOpZD44ftPXazeZhSJ2DNImIZQM3iICz28jdCn+cEvm5uhxY+kXZjikwSQBgEB0V58CauELaXHqfeFuapUdTUoMrGGMwQddwoA6FXV/kvybDdhTeTRD4KsjltMlnd3mJOfWzfpXtNEQIjSOEDxgNLDtIkV173UtK4MpijPF7GF4kgWGNG62unCktXD2Fn10rQanE0uXGYqgy60VnpTwZQOj+CqtciuDjyaXZw9W1SZyzZU1zC7E2biT02+WN3MpWzcrlFnp2k/bzTWLNgmapsWZNa4zyMcVreykSCFg1binW5uQY/Nsx6cd6DlqKeVsy6EMWIQ6eZFVsL8YnTQsgrnIq6Yh1+nPRIZJqofLilNpchGan7LAUm5+O41mhkzlIUCz8=
-  file: php-logger.phar
   on:
     repo: bhoogter/php-logger
+    tags: true

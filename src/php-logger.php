@@ -5,8 +5,11 @@ class php_logger
     public const DEFAULT = "default";
     public const ALL = "all";
     public const NONE = "none";
-    public static $defaultLevel = "warning";
+    public static $prefix = "\n<br/>";
+    public static $suffix = "";
+    public static $default_level = "warning";
     public static $levels = [];
+    public static $suppress_output = false;
     public static $count = 0;
 
     protected static function source() {
@@ -30,7 +33,7 @@ class php_logger
 
     static function get_log_level($source) {
         if (!is_string($source)) throw new Exception("php_logging::set_log_level - Invalid Argument 1 'source'.  Expected string, got [".gettype($source)."].");
-        return isset(self::$levels[$source]) ? self::$levels[$source] : self::$defaultLevel;
+        return isset(self::$levels[$source]) ? self::$levels[$source] : self::$default_level;
     }
 
     protected static function log_level_values() {
@@ -61,19 +64,28 @@ class php_logger
         return self::log_level($chk) <= self::log_level($limit);
     }
 
-    protected static function msg($level, $msg) {
+    protected static function msg($level, $msgs) {
         $src = self::source_class();
         $slv = self::get_log_level($src);
         if (!self::log_level_displayed($level, $slv)) return false;
 
+        if (!self::$suppress_output) {
+            print self::$prefix;
+            foreach($msgs as $m) {
+                if (is_string($m)) print $m; 
+                else print_r($m);
+            }
+            print self::$suffix;
+        }
+        
         self::$count++;
         return true;
     }
 
-    static function warning($msg) { return self::msg("warning", $msg); }
-    static function error($msg) { return self::msg("error", $msg); }
-    static function info($msg) { return self::msg("info", $msg); }
-    static function log($msg) { return self::msg("log", $msg); }
-    static function debug($msg) { return self::msg("debug", $msg); }
-    static function trace($msg) { return self::msg("trace", $msg); }
+    static function warning(...$msgs) { return self::msg("warning", $msgs); }
+    static function error(...$msgs) { return self::msg("error", $msgs); }
+    static function info(...$msgs) { return self::msg("info", $msgs); }
+    static function log(...$msgs) { return self::msg("log", $msgs); }
+    static function debug(...$msgs) { return self::msg("debug", $msgs); }
+    static function trace(...$msgs) { return self::msg("trace", $msgs); }
 }

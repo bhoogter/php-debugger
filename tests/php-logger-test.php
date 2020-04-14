@@ -8,7 +8,8 @@ class php_logger_test extends TestCase
 
 	public function testLog(): void
 	{
-        php_logger::$defaultLevel = 'warning';
+        php_logger::$default_level = 'warning';
+        php_logger::$suppress_output = false;
         $this->assertTrue(php_logger::error(self::TEST_MSG));
         $this->assertTrue(php_logger::warning(self::TEST_MSG));
         $this->assertFalse(php_logger::info(self::TEST_MSG));
@@ -19,11 +20,19 @@ class php_logger_test extends TestCase
 
     public function testLogSpecific(): void
 	{
-        php_logger::$defaultLevel = 'warning';
+        php_logger::$default_level = 'warning';
+        php_logger::$suppress_output = false;
         php_logger::set_log_level(get_class(), 'info');
         $this->assertEquals('info', php_logger::get_log_level(get_class()));
         $this->assertEquals('warning', php_logger::get_log_level('something else'));
         $this->assertFalse(php_logger::log(self::TEST_MSG));
         $this->assertTrue(php_logger::info(self::TEST_MSG));
 	}
+
+    public function testMultiArg(): void
+	{
+        php_logger::$default_level = 'warning';
+        php_logger::$suppress_output = true;
+        $this->assertTrue(php_logger::error('TestObjOutput', $this));
+    }
 }
