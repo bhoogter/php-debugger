@@ -6,8 +6,7 @@ dependency_manager("pages", null, __DIR__ . "/phars/");
 
 spl_autoload_register(function ($name) {
     $d = (strpos(__FILE__, ".phar") === false ? __DIR__ : "phar://" . __FILE__ . "/src");
-    if ($name == "xml_serve") require_once($d . "/class-xml-serve.php");
-    if ($name == "page_render") require_once($d . "/support/class-page-render.php");
+    if ($name == "php_logger") require_once($d . "/php-logger.php");
 });
 
 __HALT_COMPILER();
