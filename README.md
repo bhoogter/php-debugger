@@ -18,6 +18,7 @@ php_logger::trace('msg');
 ## Config
 
 ```
-php_logger::defaultLevel = 'warning';
+php_logger::default_level = 'warning';
 php_logger::set_log_level($stringClassName, $stringLevel);
+php_logger::suppress_output = true;
 ```
