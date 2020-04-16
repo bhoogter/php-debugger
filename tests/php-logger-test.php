@@ -18,6 +18,14 @@ class php_logger_test extends TestCase
         php_logger::$suppress_output = true;
     }
 
+    public function testfun1() {
+        php_logger::log(self::TEST_MSG);
+    }
+
+    public function testfun2() {
+        php_logger::log(self::TEST_MSG);
+    }
+
 
     public function testLog(): void
     {
@@ -56,6 +64,16 @@ class php_logger_test extends TestCase
         php_logger::$timestamp = true;
         php_logger::$last_message = "";
         php_logger::$default_level = 'warning';
+        $this->assertTrue(php_logger::error(self::TEST_MSG));
+        $this->assertTrue(strpos(php_logger::$last_message, " - php_logger_test") !== false);
+        $this->assertTrue(strpos(php_logger::$last_message, "testExtraOptions") !== false);
+    }
+
+    public function testLogLevelFunction(): void
+    {
+        php_logger::$default_level = 'log';
+        php_logger
+        $this->assertTruie
         $this->assertTrue(php_logger::error(self::TEST_MSG));
         $this->assertTrue(strpos(php_logger::$last_message, " - php_logger_test") !== false);
         $this->assertTrue(strpos(php_logger::$last_message, "testExtraOptions") !== false);

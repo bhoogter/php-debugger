@@ -5,12 +5,15 @@ class php_logger
     public const DEFAULT = "default";
     public const ALL = "all";
     public const NONE = "none";
+
     public static $call_source = true;
     public static $timestamp = false;
     public static $prefix = "\n<br/>";
     public static $suffix = "";
+    
     public static $default_level = "warning";
     public static $levels = [];
+
     public static $suppress_output = false;
 
     public static $last_message = "";
@@ -28,11 +31,21 @@ class php_logger
     protected static function source_function() { return self::source()['function']; }
     protected static function source_class() { return self::source()['class']; }
 
+    static function clear_log_levels($deflev = 'warning') {
+        self::$levels = [];
+        self::$default_level = $deflev;
+    }
+
     static function set_log_level($source, $level) {
-        if (!is_string($source)) throw new Exception("php_logging::set_log_level - Invalid Argument 1 'source'.  Expected string, got [".gettype($source)."].");
-        if (!is_string($level)) throw new Exception("php_logging::set_log_level - Invalid Argument 2 'level'.  Expected string, got [".gettype($source)."].");
-        if (!self::is_log_level($level)) throw new Exception("php_logging::set_log_level - Invalid log level [$level].");
-        self::$levels[$source] = $level;
+        if ($source == null) {
+            self::$default_level = $level;
+        } else {
+            if (!is_string($source)) throw new Exception("php_logging::set_log_level - Invalid Argument 1 'source'.  Expected string, got [".gettype($source)."].");
+            if (!is_string($level)) throw new Exception("php_logging::set_log_level - Invalid Argument 2 'level'.  Expected string, got [".gettype($source)."].");
+            if (!self::is_log_level($level)) throw new Exception("php_logging::set_log_level - Invalid log level [$level].");
+            self::$levels[$source] = $level;
+        }
+        return $level;
     }
 
     static function get_log_level($source) {
@@ -58,18 +71,18 @@ class php_logger
         ];
     }
 
-    static function log_levels() { return array_keys(self::log_level_values()); }
-    static function is_log_level($level) { return in_array($level, self::log_levels()); }
+    static function log_types() { return array_keys(self::log_level_values()); }
+    protected static function is_log_type($level) { return in_array($level, self::log_levels()); }
 
-    protected static function log_level($lvl) {
+    protected static function log_type_level($lvl) {
         $ll = self::log_level_values();
         return !isset($ll[$lvl]) ? $ll[self::DEFAULT] : $ll[$lvl];
     }
 
     protected static function log_level_displayed($chk, $limit) {
-        if (!self::is_log_level($chk) || !self::is_log_level($limit))
+        if (!self::is_log_type($chk) || !self::is_log_type($limit))
             return false;
-        return self::log_level($chk) <= self::log_level($limit);
+        return self::log_type_level($chk) <= self::log_type_level($limit);
     }
 
     protected static function msg($level, $msgs) {
