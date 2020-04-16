@@ -5,11 +5,15 @@ class php_logger
     public const DEFAULT = "default";
     public const ALL = "all";
     public const NONE = "none";
+    public static $call_source = true;
+    public static $timestamp = false;
     public static $prefix = "\n<br/>";
     public static $suffix = "";
     public static $default_level = "warning";
     public static $levels = [];
     public static $suppress_output = false;
+
+    public static $last_message = "";
     public static $count = 0;
 
     protected static function source() {
@@ -40,12 +44,16 @@ class php_logger
         return [
             self::DEFAULT => 2,
             self::NONE => 0,
-            'error' => 1,
-            'warning' => 2,
-            'info' => 3,
-            'log' => 4,
-            'debug' => 5,
-            'trace' => 6,
+            'headline' => 1,
+            'alert' => 2,
+            'error' => 3,
+            'warning' => 4,
+            'info' => 5,
+            'log' => 6,
+            'debug' => 7,
+            'trace' => 8,
+            'dump' => 9,
+            'temp' => 10,
             self::ALL => 127
         ];
     }
@@ -67,25 +75,46 @@ class php_logger
     protected static function msg($level, $msgs) {
         $src = self::source_class();
         $slv = self::get_log_level($src);
-        if (!self::log_level_displayed($level, $slv)) return false;
+        $sfn = self::source_class() . "::" . self::source_function();
+        $sfl = self::get_log_level($sfn);
+        if (!self::log_level_displayed($level, $slv) &&
+            !self::log_level_displayed($level, $sfl))
+            return false;
 
-        if (!self::$suppress_output) {
-            print self::$prefix;
-            foreach($msgs as $m) {
-                if (is_string($m)) print $m; 
-                else print_r($m);
-            }
-            print self::$suffix;
+        $out = "";
+        $out .= self::$prefix;
+        $out .= strtoupper($level) . ": ";
+        if (self::$call_source || self::$timestamp) {
+            $out .= "[";
+            if (self::$timestamp) $out .= date("H:i:s");
+            if (self::$call_source && self::$timestamp) $out .= " - ";
+            if (self::$call_source) $out .= self::source_class() . "::" . self::source_function();
+            $out .= "]: ";
         }
+        
+        $n = 0;
+        foreach($msgs as $m) {
+            if ($n++) $out .= "\t";
+            if (is_string($m)) $out .= $m;
+            else $out .= print_r($m, true);
+        }
+        $out .= self::$suffix;
+
+        if (!self::$suppress_output) print $out;
+        self::$last_message = $out;
         
         self::$count++;
         return true;
     }
 
-    static function warning(...$msgs) { return self::msg("warning", $msgs); }
+    static function headline(...$msgs) { return self::msg("headline", $msgs); }
+    static function alert(...$msgs) { return self::msg("alert", $msgs); }
     static function error(...$msgs) { return self::msg("error", $msgs); }
+    static function warning(...$msgs) { return self::msg("warning", $msgs); }
     static function info(...$msgs) { return self::msg("info", $msgs); }
     static function log(...$msgs) { return self::msg("log", $msgs); }
     static function debug(...$msgs) { return self::msg("debug", $msgs); }
     static function trace(...$msgs) { return self::msg("trace", $msgs); }
+    static function dump(...$msgs) { return self::msg("dump", $msgs); }
+    static function temp(...$msgs) { return self::msg("temp", $msgs); }
 }
