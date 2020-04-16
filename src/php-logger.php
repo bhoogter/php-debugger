@@ -31,9 +31,13 @@ class php_logger
     protected static function source_function() { return self::source()['function']; }
     protected static function source_class() { return self::source()['class']; }
 
-    static function clear_log_levels($deflev = 'warning') {
+    static function clear_log_levels($deflev = '#') {
         self::$levels = [];
-        self::$default_level = $deflev;
+        if ($deflev != '#') {
+            if (!in_array($deflev, self::log_types()))
+                throw new Exception("Invalid default level in clear_log_levels.  Got [$deflev], expected one of [".join(',', self::log_types())."].");
+            self::$default_level = $deflev;
+        }
     }
 
     static function set_log_level($source, $level) {
