@@ -18,18 +18,18 @@ class php_logger_test extends TestCase
         php_logger::$suppress_output = true;
     }
 
-    public function testfun1() {
-        php_logger::log(self::TEST_MSG);
+    public function msg1() {
+        return php_logger::log(self::TEST_MSG);
     }
 
-    public function testfun2() {
-        php_logger::log(self::TEST_MSG);
+    public function msg2() {
+        return php_logger::log(self::TEST_MSG);
     }
 
 
     public function testLog(): void
     {
-        php_logger::$default_level = 'warning';
+        php_logger::clear_log_levels();
         $this->assertTrue(php_logger::headline(self::TEST_MSG));
         $this->assertTrue(php_logger::alert(self::TEST_MSG));
         $this->assertTrue(php_logger::error(self::TEST_MSG));
@@ -44,7 +44,7 @@ class php_logger_test extends TestCase
 
     public function testLogSpecific(): void
     {
-        php_logger::$default_level = 'warning';
+        php_logger::clear_log_levels();
         php_logger::set_log_level(get_class(), 'info');
         $this->assertEquals('info', php_logger::get_log_level(get_class()));
         $this->assertEquals('warning', php_logger::get_log_level('something else'));
@@ -54,7 +54,7 @@ class php_logger_test extends TestCase
 
     public function testMultiArg(): void
     {
-        php_logger::$default_level = 'warning';
+        php_logger::clear_log_levels();
         $this->assertTrue(php_logger::error(self::TEST_MSG, 1, 45.2, new test_object()));
     }
 
@@ -63,7 +63,7 @@ class php_logger_test extends TestCase
         php_logger::$call_source = true;
         php_logger::$timestamp = true;
         php_logger::$last_message = "";
-        php_logger::$default_level = 'warning';
+        php_logger::clear_log_levels();
         $this->assertTrue(php_logger::error(self::TEST_MSG));
         $this->assertTrue(strpos(php_logger::$last_message, " - php_logger_test") !== false);
         $this->assertTrue(strpos(php_logger::$last_message, "testExtraOptions") !== false);
@@ -71,11 +71,10 @@ class php_logger_test extends TestCase
 
     public function testLogLevelFunction(): void
     {
-        php_logger::$default_level = 'log';
-        php_logger
-        $this->assertTruie
-        $this->assertTrue(php_logger::error(self::TEST_MSG));
-        $this->assertTrue(strpos(php_logger::$last_message, " - php_logger_test") !== false);
-        $this->assertTrue(strpos(php_logger::$last_message, "testExtraOptions") !== false);
+        php_logger::clear_log_levels();
+        php_logger::set_log_level("php_logger_test::msg1", "log");
+        php_logger::set_log_level("php_logger_test::msg2", "error");
+        $this->assertTrue($this->msg1());
+        $this->assertFalse($this->msg2());
     }
 }

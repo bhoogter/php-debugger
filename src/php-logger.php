@@ -42,7 +42,7 @@ class php_logger
         } else {
             if (!is_string($source)) throw new Exception("php_logging::set_log_level - Invalid Argument 1 'source'.  Expected string, got [".gettype($source)."].");
             if (!is_string($level)) throw new Exception("php_logging::set_log_level - Invalid Argument 2 'level'.  Expected string, got [".gettype($source)."].");
-            if (!self::is_log_level($level)) throw new Exception("php_logging::set_log_level - Invalid log level [$level].");
+            if (!self::is_log_type($level)) throw new Exception("php_logging::set_log_level - Invalid log level [$level].");
             self::$levels[$source] = $level;
         }
         return $level;
@@ -72,7 +72,7 @@ class php_logger
     }
 
     static function log_types() { return array_keys(self::log_level_values()); }
-    protected static function is_log_type($level) { return in_array($level, self::log_levels()); }
+    protected static function is_log_type($level) { return in_array($level, self::log_types()); }
 
     protected static function log_type_level($lvl) {
         $ll = self::log_level_values();
