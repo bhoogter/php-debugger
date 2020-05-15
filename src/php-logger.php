@@ -22,7 +22,7 @@ class php_logger
     public static $warning_prefix = "********";
     public static $note_prefix = "***";
     public static $call_prefix = "===> CALL:";
-    public static $result_prefix = "===> RESULT:";
+    public static $result_prefix = "<=== RESULT:";
     
     protected static $default_level = "warning";
     protected static $levels = [];
@@ -52,7 +52,7 @@ class php_logger
         self::$warning_prefix = "******";
         self::$note_prefix = "***";
         self::$call_prefix = "===> CALL:";
-        self::$result_prefix = "===> RESULT:";
+        self::$result_prefix = "<=== RESULT:";
 
         self::$default_level = "warning";
         self::$levels = [];

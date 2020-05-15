@@ -36,7 +36,7 @@ class format_test extends TestCase
         $this->doResult("XXX");
         $result = php_logger::$last_message;
         $this->assertEquals(
-            " RESULT: [format_test::doResult]: ===> RESULT: [doResult] XXX"
+            " RESULT: [format_test::doResult]: <=== RESULT: [doResult] XXX"
             , $result);
     }
 }
