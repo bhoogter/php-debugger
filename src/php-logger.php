@@ -187,7 +187,7 @@ class php_logger
         return true;
     }
 
-    protected function log_file($out) {
+    protected static function log_file($out) {
         $f = false === strpos(self::$log_file, DIRECTORY_SEPARATOR) ?
             self::$log_folder . DIRECTORY_SEPARATOR . self::$log_file :
             self::$log_file;
