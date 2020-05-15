@@ -16,6 +16,7 @@ class php_logger_test extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        php_logger::reset();
         php_logger::$suppress_output = true;
     }
 
