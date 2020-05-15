@@ -152,7 +152,7 @@ class php_logger
             return false;
 
         $out = "";
-        $out .= strtoupper(substr("$level     ", 0, 5)) . ": ";
+        $out .= strtoupper(substr("$level       ", 0, 7)) . ": ";
         if (self::$call_source || self::$timestamp) {
             $out .= "[";
             if (self::$timestamp) $out .= date("H:i:s");
