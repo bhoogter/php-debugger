@@ -22,5 +22,6 @@ class file_test extends TestCase
         $result = file_get_contents($f);
         @unlink($f);
         $this->assertNotEquals("", $result);
+        print $result;
     }
 }

@@ -152,7 +152,6 @@ class php_logger
             return false;
 
         $out = "";
-        $out .= self::$prefix;
         $out .= strtoupper($level) . ": ";
         if (self::$call_source || self::$timestamp) {
             $out .= "[";
@@ -176,11 +175,10 @@ class php_logger
                 $out .= $tVal;
             }
         }
-        $out .= self::$suffix;
 
-        if (!self::$nocrlf) $out = str_replace(["\n", "\r"], "", $out);
-        if (!self::$suppress_output) print $out;
-        if (self::$log_file) self::log_file($out);
+        if (self::$nocrlf) $out = str_replace(["\n", "\r"], "", $out);
+        if (!self::$suppress_output) print self::$prefix . $out . self::$suffix;
+        if (self::$log_file) self::log_file("$out\n");
         self::$last_message = $out;
         
         self::$count++;
@@ -219,6 +217,6 @@ class php_logger
     static function temp(...$msgs) { return self::msg("temp", $msgs); }
     static function scan(...$msgs) { return self::msg("scan", $msgs); }
 
-    static function result(...$msgs) { return self::msg("call", array_merge([self::$result_prefix], $msgs)); }
+    static function result(...$msgs) { return self::msg("result", array_merge([self::$result_prefix], $msgs)); }
     static function call(...$msgs) { return self::msg("call", array_merge([self::$call_prefix], $msgs, self::source_args())); }
 }
