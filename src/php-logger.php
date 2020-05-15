@@ -16,13 +16,13 @@ class php_logger
     public static $nocrlf = false;
     public static $truncate = 0;
 
-    public static $headling_prefix = "#############################################################\n###\n###  ";
+    public static $headling_prefix = "#############################################################\n###\n###";
     public static $alert_prefix = "##################################\n##################################\n";
     public static $error_prefix = "**********************************";
-    public static $warning_prefix = "******** ";
-    public static $note_prefix = "*** ";
-    public static $call_prefix = "===> CALL: ";
-    public static $result_prefix = "===> RESULT: ";
+    public static $warning_prefix = "********";
+    public static $note_prefix = "***";
+    public static $call_prefix = "===> CALL:";
+    public static $result_prefix = "===> RESULT:";
     
     protected static $default_level = "warning";
     protected static $levels = [];
@@ -46,13 +46,13 @@ class php_logger
         self::$nocrlf = false;
         self::$truncate = 0;
 
-        self::$headling_prefix = "#############################################################\n###\n###  ";
+        self::$headling_prefix = "#############################################################\n###\n###";
         self::$alert_prefix = "##################################\n##################################\n";
         self::$error_prefix = "**********************************";
-        self::$warning_prefix = "****** ";
-        self::$note_prefix = "*** ";
-        self::$call_prefix = "===> CALL: ";
-        self::$result_prefix = "===> RESULT: ";
+        self::$warning_prefix = "******";
+        self::$note_prefix = "***";
+        self::$call_prefix = "===> CALL:";
+        self::$result_prefix = "===> RESULT:";
 
         self::$default_level = "warning";
         self::$levels = [];
@@ -74,10 +74,10 @@ class php_logger
         return null;
     }
 
-    protected static function source_function() { return self::source()['function']; }
-    protected static function source_class() { return self::source()['class']; }
+    protected static function source_function() { return array_key_exists('function', $s = self::source()) ? $s['function'] : null; }
+    protected static function source_class() { return array_key_exists('class', $s = self::source()) ? $s['class'] : null; }
     protected static function source_line() { return array_key_exists('line', $s = self::source()) ? $s['line'] : 0; }
-    protected static function source_args() { return self::source()['args']; }
+    protected static function source_args() { return array_key_exists('args', $s = self::source()) ? $s['args'] : []; }
 
     static function clear_log_levels($deflev = '#') {
         self::$levels = [];
@@ -152,7 +152,7 @@ class php_logger
             return false;
 
         $out = "";
-        $out .= strtoupper(substr("$level       ", 0, 7)) . ": ";
+        $out .= strtoupper(strrev(substr(strrev("        $level"), 0, 7))) . ": ";
         if (self::$call_source || self::$timestamp) {
             $out .= "[";
             if (self::$timestamp) $out .= date("H:i:s");
@@ -167,7 +167,7 @@ class php_logger
         
         $n = 0;
         foreach($msgs as $m) {
-            if ($n++) $out .= "\t";
+            if ($n++) $out .= " ";
             if (is_string($m)) $out .= $m;
             else {
                 $tVal = print_r($m, true);
@@ -203,6 +203,40 @@ class php_logger
         file_put_contents($f, $t);
     }
 
+    protected static function source_arg_names() {
+        $result = [];
+        try {
+            $method = self::source_class() ?
+                new ReflectionMethod(self::source_class(), self::source_function()) :
+                new ReflectionFunction(self::source_function());
+            
+            foreach ($method->getParameters() as $param) 
+                $result[] = $param->name;
+            return $result;
+        } catch (Exception $e) {
+            // ignore
+        }
+        return [];
+    }
+
+    protected static function named_and_args() {
+        $args = self::source_args();
+        $names = self::source_arg_names();
+        $ca = count($args);
+        $cn = count($names);
+        $c = $ca >= $cn ? $ca : $cn;
+
+        $result = [];
+        for($i = 0; $i < $c; $i++) {
+            $n = $i < $cn ? $names[$i] . "=" : '...=';
+            $a = $i < $ca ? $args[$i] : '';
+            $result[] = $n;
+            $result[] = $a;
+        }
+
+        return $result;
+    }
+
     static function headline(...$msgs) { return self::msg("headline", array_merge([self::$headling_prefix], $msgs)); }
     static function alert(...$msgs) { return self::msg("alert", array_merge([self::$alert_prefix], $msgs)); }
     static function error(...$msgs) { return self::msg("error", array_merge([self::$error_prefix], $msgs)); }
@@ -217,6 +251,6 @@ class php_logger
     static function temp(...$msgs) { return self::msg("temp", $msgs); }
     static function scan(...$msgs) { return self::msg("scan", $msgs); }
 
-    static function call(...$msgs) { return self::msg("call", array_merge([self::$call_prefix, "[".self::source_function()."]"], $msgs, self::source_args())); }
+    static function call(...$msgs) { return self::msg("call", array_merge([self::$call_prefix, "[".self::source_function()."]"], $msgs, self::named_and_args())); }
     static function result(...$msgs) { return self::msg("result", array_merge([self::$result_prefix, "[".self::source_function()."]"], $msgs)); }
 }
