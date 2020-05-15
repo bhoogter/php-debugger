@@ -152,7 +152,7 @@ class php_logger
             return false;
 
         $out = "";
-        $out .= strtoupper($level) . ": ";
+        $out .= strtoupper(substr("$level     ", 0, 5)) . ": ";
         if (self::$call_source || self::$timestamp) {
             $out .= "[";
             if (self::$timestamp) $out .= date("H:i:s");
@@ -217,6 +217,6 @@ class php_logger
     static function temp(...$msgs) { return self::msg("temp", $msgs); }
     static function scan(...$msgs) { return self::msg("scan", $msgs); }
 
-    static function result(...$msgs) { return self::msg("result", array_merge([self::$result_prefix], $msgs)); }
-    static function call(...$msgs) { return self::msg("call", array_merge([self::$call_prefix], $msgs, self::source_args())); }
+    static function call(...$msgs) { return self::msg("call", array_merge([self::$call_prefix, "[".self::source_function()."]"], $msgs, self::source_args())); }
+    static function result(...$msgs) { return self::msg("result", array_merge([self::$result_prefix, "[".self::source_function()."]"], $msgs)); }
 }

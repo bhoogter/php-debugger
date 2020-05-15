@@ -16,12 +16,14 @@ class file_test extends TestCase
         $f = __DIR__ . DIRECTORY_SEPARATOR . "tmp.log";
         if (file_exists($f)) @unlink($f);
         $this->assertFalse(@file_get_contents($f));
+        php_logger::clear_log_levels('all');
         php_logger::$log_folder = __DIR__;
         php_logger::$log_file = "tmp.log";
         php_logger::warning("Message");
+        php_logger::call();
         $result = file_get_contents($f);
         @unlink($f);
         $this->assertNotEquals("", $result);
-        print $result;
+        print "\n$result";
     }
 }
