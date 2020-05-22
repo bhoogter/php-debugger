@@ -65,19 +65,26 @@ class php_logger
         self::$log_file = null;
     }
 
-    protected static function source() {
+    protected static function source($next = false) {
         $trace = debug_backtrace();
+        // static $x;
+        // if (!isset($x)) print_r(array_slice($trace, 0, $x = 3));
         for($i = 0; $i < sizeof($trace); $i++) {
             if ($trace[$i]['class'] == get_class()) continue;
-            return $trace[$i];
+            return !$next ? $trace[$i] : $trace[$i - 1];
         }
         return null;
     }
 
     protected static function source_function() { return array_key_exists('function', $s = self::source()) ? $s['function'] : null; }
     protected static function source_class() { return array_key_exists('class', $s = self::source()) ? $s['class'] : null; }
-    protected static function source_line() { return array_key_exists('line', $s = self::source()) ? $s['line'] : 0; }
+    protected static function source_line() { return array_key_exists('line', $s = self::source(true)) ? $s['line'] : 0; }
     protected static function source_args() { return array_key_exists('args', $s = self::source()) ? $s['args'] : []; }
+
+    static function enable($level = 'all') {
+        self::set_log_level(self::source_class() . '::' . self::source_function(), $level);
+    }
+    static function disble() { self::enable('none'); }
 
     static function clear_log_levels($deflev = '#') {
         self::$levels = [];
