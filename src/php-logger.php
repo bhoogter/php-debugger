@@ -8,6 +8,7 @@ class php_logger
 
     public static $call_source = true;
     public static $timestamp = false;
+    public static $nanos = true;
     public static $prefix = "\n<br/>";
     public static $suffix = "";
 
@@ -39,6 +40,7 @@ class php_logger
     public static function reset() {
         self::$call_source = true;
         self::$timestamp = false;
+        self::$nanos = false;
 
         self::$prefix = "\n<br/>";
         self::$line_numbers = true;
@@ -162,7 +164,7 @@ class php_logger
         $out .= strtoupper(strrev(substr(strrev("        $level"), 0, 7))) . ": ";
         if (self::$call_source || self::$timestamp) {
             $out .= "[";
-            if (self::$timestamp) $out .= date("H:i:s");
+            if (self::$timestamp) $out .= date(self::$nanos ? "H:i:s" : "H:i:s");
             if (self::$call_source && self::$timestamp) $out .= " - ";
             if (self::$call_source) $out .= self::source_class() . "::" . self::source_function();
             if (self::$line_numbers) {
