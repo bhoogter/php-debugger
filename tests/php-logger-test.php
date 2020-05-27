@@ -71,7 +71,8 @@ class php_logger_test extends TestCase
         php_logger::$last_message = "";
         php_logger::clear_log_levels();
         $this->assertTrue(php_logger::error(self::TEST_MSG));
-        $this->assertTrue(strpos(php_logger::$last_message, " - php_logger_test") !== false);
+        $this->assertTrue(strpos(php_logger::$last_message, " - ") !== false);
+        $this->assertTrue(strpos(php_logger::$last_message, "php_logger_test") !== false);
         $this->assertTrue(strpos(php_logger::$last_message, "testExtraOptions") !== false);
     }
 
