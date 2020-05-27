@@ -164,7 +164,7 @@ class php_logger
         $out .= strtoupper(strrev(substr(strrev("        $level"), 0, 7))) . ": ";
         if (self::$call_source || self::$timestamp) {
             $out .= "[";
-            if (self::$timestamp) $out .= date(self::$nanos ? "H:i:s" : "H:i:s");
+            if (self::$timestamp) $out .= date(self::$nanos ? "H:i:s.u" : "H:i:s");
             if (self::$call_source && self::$timestamp) $out .= " - ";
             if (self::$call_source) $out .= self::source_class() . "::" . self::source_function();
             if (self::$line_numbers) {
