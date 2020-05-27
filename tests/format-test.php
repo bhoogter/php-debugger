@@ -39,4 +39,13 @@ class format_test extends TestCase
             " RESULT: [format_test::doResult]: <=== RESULT: [doResult] XXX"
             , $result);
     }
+
+    public function testResultFormatTimestampsNanos(): void {
+        php_logger::$timestamp = true;
+        php_logger::$nanos = true;
+        $this->doResult("XXX");
+        $result = php_logger::$last_message;
+        print $result;
+        $this->assertTrue(!!preg_match("/..:..:......... -  RESULT: \\[format_test::doResult\\]: \\<=== RESULT: \\[doResult\\] XXX/", $result));
+    }
 }
