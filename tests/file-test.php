@@ -26,4 +26,19 @@ class file_test extends TestCase
         $this->assertNotEquals("", $result);
         print "\n$result";
     }
+
+    public function testFileAppend(): void
+    {
+        $f = __DIR__ . DIRECTORY_SEPARATOR . "tmp.log";
+        if (file_exists($f)) @unlink($f);
+        $this->assertFalse(@file_get_contents($f));
+        php_logger::clear_log_levels('all');
+        php_logger::$log_folder = __DIR__;
+        php_logger::$log_file = "tmp.log";
+
+        for($i = 0; $i < 30; $i++) php_logger::log("$i");
+
+        $result = file_get_contents($f);
+        $this->assertTrue(substr_count($result, "\n") > 10);
+    }
 }
