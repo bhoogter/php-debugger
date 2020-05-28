@@ -28,6 +28,7 @@ class php_logger
     protected static $default_level = "warning";
     protected static $levels = [];
 
+    public static $disable = false;
     public static $suppress_output = false;
 
     public static $last_message = "";
@@ -60,6 +61,7 @@ class php_logger
         self::$levels = [];
 
         self::$suppress_output = false;
+        self::$disable = false;
 
         self::$last_message = "";
         self::$count = 0;
@@ -67,10 +69,9 @@ class php_logger
         self::$log_file = null;
     }
 
-    protected static function source($next = false) {
-        $trace = debug_backtrace();
-        // static $x;
-        // if (!isset($x)) print_r(array_slice($trace, 0, $x = 3));
+    protected static function source($next = false, $reset = false) {
+        static $trace;
+        if ($reset) $trace = debug_backtrace();
         for($i = 0; $i < sizeof($trace); $i++) {
             if ($trace[$i]['class'] == get_class()) continue;
             return !$next ? $trace[$i] : $trace[$i - 1];
@@ -78,7 +79,7 @@ class php_logger
         return null;
     }
 
-    protected static function source_function() { return array_key_exists('function', $s = self::source()) ? $s['function'] : null; }
+    protected static function source_function() { return array_key_exists('function', $s = self::source(false, true)) ? $s['function'] : null; }
     protected static function source_class() { return array_key_exists('class', $s = self::source()) ? $s['class'] : null; }
     protected static function source_line() { return array_key_exists('line', $s = self::source(true)) ? $s['line'] : 0; }
     protected static function source_args() { return array_key_exists('args', $s = self::source()) ? $s['args'] : []; }
@@ -152,10 +153,16 @@ class php_logger
     }
 
     protected static function msg($level, $msgs) {
-        $src = self::source_class();
+        if (self::$disable) return;
+        $fn = self::source_function();
+        $cl = self::source_class();
+
+        $src = $cl;
         $slv = self::get_log_level($src);
-        $sfn = self::source_class() . "::" . self::source_function();
+        
+        $sfn = "$cl::$fn";
         $sfl = self::get_log_level($sfn);
+
         if (!self::log_level_displayed($level, $slv) &&
             !self::log_level_displayed($level, $sfl))
             return false;
