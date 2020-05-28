@@ -1,6 +1,6 @@
 <?php
 
-if (!class_exists("php_logger")) {
+if (!class_exists("php_logger", false)) {
 	class php_logger {
         public const DEFAULT = "default";
         public const ALL = "all";
