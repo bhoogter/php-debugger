@@ -169,7 +169,7 @@ class php_logger
 
         $out = "";
         if (self::$timestamp) $out .= date("H:i:s");
-        if (self::$nanos) $out .= (self::$timestamp ? "." : "") . gettimeofday()["usec"];
+        if (self::$nanos) $out .= (self::$timestamp ? "." : "") . sprintf("%06d", gettimeofday()["usec"]);
         if (self::$timestamp || self::$nanos) $out .= " - ";
         $out .= strtoupper(strrev(substr(strrev("        $level"), 0, 7))) . ": ";
         if (self::$call_source || self::$timestamp) {
