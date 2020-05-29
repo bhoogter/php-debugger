@@ -30,6 +30,16 @@ class php_logger_test extends TestCase
         return php_logger::log(self::TEST_MSG);
     }
 
+    public function warn($s)
+    {
+        return php_logger::warn($s);
+    }
+
+    public function hop_to_log($s)
+    {
+        return $this->warn($s);
+    }
+
     public function testLog(): void
     {
         php_logger::clear_log_levels();
@@ -107,12 +117,17 @@ class php_logger_test extends TestCase
         $this->assertTrue(false !== strpos(php_logger::$last_message, "php_logger_test::withArgs:"));
     }
 
-    public function testReset()
+    public function testReset(): void
     {
         php_logger::$count = 45;
         $this->assertEquals(45, php_logger::$count);
         php_logger::reset();
         $this->assertEquals(0, php_logger::$count);
-        php_logger::$suppress_output = true;
+    }
+
+    public function testShadow(): void
+    {
+        $this->hop_to_log("testmsg");
+        $this->assertTrue(false !== strpos(php_logger::$last_message, 'hop_to_log'));
     }
 }

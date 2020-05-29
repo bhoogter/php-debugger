@@ -74,6 +74,7 @@ class php_logger
         if ($reset) $trace = debug_backtrace();
         for($i = 0; $i < sizeof($trace); $i++) {
             if ($trace[$i]['class'] == get_class()) continue;
+            if (self::is_log_type($trace[$i]['function'])) continue;  // Ignore shadowed methods
             return !$next ? $trace[$i] : $trace[$i - 1];
         }
         return null;
@@ -123,6 +124,7 @@ class php_logger
             'alert' => 2,
             'error' => 3,
             'warning' => 4,
+            'warn' => 4,
             'note' => 5,
             'call' => 6,
             'result' => 6,
