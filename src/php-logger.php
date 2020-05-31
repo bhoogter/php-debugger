@@ -73,7 +73,7 @@ class php_logger
         static $trace;
         if ($reset) $trace = debug_backtrace();
         for($i = 0; $i < sizeof($trace); $i++) {
-            if ($trace[$i]['class'] == get_class()) continue;
+            if (array_key_exists('class', $trace[$i]) && @$trace[$i]['class'] == get_class()) continue;
             if (self::is_log_type($trace[$i]['function'])) continue;  // Ignore shadowed methods
             return !$next ? $trace[$i] : $trace[$i - 1];
         }
@@ -81,7 +81,7 @@ class php_logger
     }
 
     protected static function source_function() { return array_key_exists('function', $s = self::source(false, true)) ? $s['function'] : null; }
-    protected static function source_class() { return array_key_exists('class', $s = self::source()) ? $s['class'] : null; }
+    protected static function source_class() { return array_key_exists('class', $s = self::source()) ? $s['class'] : basename($s['file']); }
     protected static function source_line() { return array_key_exists('line', $s = self::source(true)) ? $s['line'] : 0; }
     protected static function source_args() { return array_key_exists('args', $s = self::source()) ? $s['args'] : []; }
 
